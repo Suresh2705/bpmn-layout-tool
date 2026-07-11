@@ -1,0 +1,27 @@
+package com.tnq.bpmnlayout.graph;
+
+/**
+ *
+ * @author suresh
+ */
+public enum NodeType {
+
+    START_EVENT,
+    END_EVENT,
+    USER_TASK,
+    SCRIPT_TASK,
+    SERVICE_TASK,
+    BUSINESS_RULE_TASK,
+    MANUAL_TASK,
+    SEND_TASK,
+    RECEIVE_TASK,
+    CALL_ACTIVITY,
+    SUB_PROCESS,
+    EXCLUSIVE_GATEWAY,
+    PARALLEL_GATEWAY,
+    INCLUSIVE_GATEWAY,
+    EVENT_GATEWAY,
+    INTERMEDIATE_THROW_EVENT,
+    INTERMEDIATE_CATCH_EVENT,
+    UNKNOWN
+}
