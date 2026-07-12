@@ -15,13 +15,24 @@ public class Grid {
         return cells.computeIfAbsent(
                 key,
                 k -> new GridCell(row, column));
-
     }
 
     public void put(int row, int column, GridCell cell) {
 
-        cells.put(row + ":" + column, cell);
+        cells.put(row + ":" +column, cell);
+    }
 
+    /**
+     * Remove every occupied cell.
+     */
+    public void clear() {
+
+        cells.clear();
+    }
+
+    public Map<String, GridCell> getCells() {
+
+        return cells;
     }
 
 }

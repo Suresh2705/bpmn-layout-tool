@@ -1,21 +1,29 @@
 package com.tnq.bpmnlayout.routing;
 
-import com.tnq.bpmnlayout.model.Point;
+import com.tnq.bpmnlayout.model.Waypoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Route {
 
-    private final List<Point> points =
+    private final List<Waypoint> points =
             new ArrayList<>();
 
     public void addPoint(int x, int y) {
-        points.add(new Point(x, y));
+        points.add(new Waypoint(x, y));
+    }
+    
+    public void addPoint(Waypoint point) {
+        points.add(point);
     }
 
-    public List<Point> getPoints() {
+    public List<Waypoint> getPoints() {
         return points;
+    }
+
+    public void clear() {
+        points.clear();
     }
 
 }

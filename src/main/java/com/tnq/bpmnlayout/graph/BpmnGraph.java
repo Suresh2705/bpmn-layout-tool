@@ -26,14 +26,16 @@ public class BpmnGraph {
         return edges;
     }
 
-    public void addEdge(Edge edge){
+    public void addEdge(Edge edge) {
 
         edges.add(edge);
-
-        edge.getSource().addOutgoing(edge);
-
-        edge.getTarget().addIncoming(edge);
-
+    
+        if (edge.getSource() != null) {
+            edge.getSource().addOutgoing(edge);
+        }
+    
+        if (edge.getTarget() != null) {
+            edge.getTarget().addIncoming(edge);
+        }
     }
-
 }

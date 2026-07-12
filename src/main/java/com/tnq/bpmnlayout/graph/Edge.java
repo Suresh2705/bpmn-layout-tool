@@ -5,11 +5,8 @@ import com.tnq.bpmnlayout.routing.Route;
 public class Edge {
 
     private final String id;
-
     private final BpmnNode source;
-
     private final BpmnNode target;
-
     private Route route;
 
     public Edge(

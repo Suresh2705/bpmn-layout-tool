@@ -16,6 +16,12 @@ public class LayoutEngine {
 
     private final LaneAssigner laneAssigner = new LaneAssigner();
 
+    private final BranchBalancer branchBalancer =
+        new BranchBalancer();
+
+    private final LaneOptimizer laneOptimizer =
+        new LaneOptimizer();
+
     private final CoordinateAssigner coordinateAssigner =
             new CoordinateAssigner();
 
@@ -40,6 +46,10 @@ public class LayoutEngine {
 
         laneAssigner.assignLanes(graph);
 
+        laneOptimizer.optimize(graph);
+
+        branchBalancer.balance(graph);
+
         GridLayoutEngine grid =
                 new GridLayoutEngine();
 
@@ -52,7 +62,8 @@ public class LayoutEngine {
 
         context.setGrid(grid);
 
-        coordinateAssigner.assign(context);
+        // coordinateAssigner.assign(context);
+        coordinateAssigner.assign(graph);
 
         orthogonalRouter.route(context);
 

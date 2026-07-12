@@ -20,18 +20,14 @@ public class BpmnNode {
     private String id;
     private String name;
     private NodeType type;
-    private int x;
-    private int y;
     private NodeRole role = NodeRole.UNKNOWN;
     private LayoutNode layout;
-
-    //    private final List<Edge> outgoing = new ArrayList<>();
-//    private final List<Edge> incoming = new ArrayList<>();
     private final List<Edge> outgoing;
     private final List<Edge> incoming;
-
     private int level = -1;
     private int lane = -1;
+    private int x;
+    private int y;
 
     public BpmnNode(String id, String name, NodeType type) {
         this.incoming = new ArrayList<>();
@@ -85,6 +81,23 @@ public class BpmnNode {
         this.lane = lane;
     }
 
+    public NodeRole getRole() {
+        return role;
+    }
+
+    public void setRole(NodeRole role) {
+        this.role = role;
+    }
+
+    public LayoutNode getLayout() {
+        return layout;
+    }
+
+    public void setLayout(LayoutNode layout) {
+        this.layout = layout;
+    }
+
+    // Need to remove later
     public int getX() {
         return x;
     }
@@ -101,12 +114,20 @@ public class BpmnNode {
         this.y = y;
     }
 
-    public NodeRole getRole() {
-        return role;
+    public int getRightCenterX() {
+        return x + getWidth();
     }
 
-    public void setRole(NodeRole role) {
-        this.role = role;
+    public int getRightCenterY() {
+        return y + getHeight() / 2;
+    }
+
+    public int getLeftCenterX() {
+        return x;
+    }
+
+    public int getLeftCenterY() {
+        return y + getHeight() / 2;
     }
 
     public int getWidth() {
@@ -145,30 +166,6 @@ public class BpmnNode {
             default:
                 return 80;
         }
-    }
-
-    public int getRightCenterX() {
-        return x + getWidth();
-    }
-
-    public int getRightCenterY() {
-        return y + getHeight() / 2;
-    }
-
-    public int getLeftCenterX() {
-        return x;
-    }
-
-    public int getLeftCenterY() {
-        return y + getHeight() / 2;
-    }
-
-    public LayoutNode getLayout() {
-        return layout;
-    }
-
-    public void setLayout(LayoutNode layout) {
-        this.layout = layout;
     }
 
 }
