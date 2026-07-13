@@ -13,13 +13,21 @@ public class Route {
     public void addPoint(int x, int y) {
         points.add(new Waypoint(x, y));
     }
-    
+
     public void addPoint(Waypoint point) {
         points.add(point);
     }
 
     public List<Waypoint> getPoints() {
         return points;
+    }
+
+    public int size() {
+        return points.size();
+    }
+
+    public boolean isEmpty() {
+        return points.isEmpty();
     }
 
     public void clear() {

@@ -1,4 +1,3 @@
-
 package com.tnq.bpmnlayout.parser;
 
 import com.tnq.bpmnlayout.graph.*;
@@ -162,7 +161,5 @@ public class BpmnParser {
             default:
                 return NodeType.UNKNOWN;
         }
-
     }
-
 }

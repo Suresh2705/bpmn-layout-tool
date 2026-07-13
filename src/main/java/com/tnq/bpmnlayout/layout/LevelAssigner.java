@@ -39,10 +39,10 @@ public class LevelAssigner {
 
                 BpmnNode target = edge.getTarget();
 
-                if (target.getLevel() < nextLevel) {
+                if (target.getLevel() == -1) {
 
                     target.setLevel(nextLevel);
-
+                
                     queue.add(target);
                 }
             }
