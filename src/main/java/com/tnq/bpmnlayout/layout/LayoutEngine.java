@@ -48,11 +48,11 @@ public class LayoutEngine {
         System.out.println("3. Lane assign");
         laneAssigner.assignLanes(graph);
 
-        System.out.println("4. Lane optimize");
-        laneOptimizer.optimize(graph);
-
-        System.out.println("5. Branch balance");
+        System.out.println("4. Branch balance");
         branchBalancer.balance(graph);
+
+        System.out.println("5. Lane optimize");
+        laneOptimizer.optimize(graph);
 
         System.out.println("6. Grid");
         GridLayoutEngine grid = new GridLayoutEngine();

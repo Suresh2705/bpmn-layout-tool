@@ -2,25 +2,10 @@ package com.tnq.bpmnlayout.layout;
 
 import com.tnq.bpmnlayout.graph.BpmnGraph;
 import com.tnq.bpmnlayout.graph.BpmnNode;
-import com.tnq.bpmnlayout.graph.Edge;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class LaneOptimizer {
 
     public void optimize(BpmnGraph graph) {
-
-        Map<Integer, Map<Integer, BpmnNode>> occupied =
-                new HashMap<>();
-
-        for (BpmnNode node : graph.getNodes()) {
-
-            occupied
-                    .computeIfAbsent(node.getLevel(),
-                            k -> new HashMap<>())
-                    .put(node.getLane(), node);
-        }
 
         boolean changed;
 
@@ -30,44 +15,66 @@ public class LaneOptimizer {
 
             for (BpmnNode node : graph.getNodes()) {
 
-                if (node.getIncoming().isEmpty()) {
-                    continue;
+                if (canAlign(node)) {
+
+                    int lane =
+                            node.getIncoming()
+                                    .get(0)
+                                    .getSource()
+                                    .getLane();
+
+                    if (lane != node.getLane()) {
+
+                        node.setLane(lane);
+
+                        changed = true;
+
+                    }
+
                 }
 
-                int desiredLane = Integer.MAX_VALUE;
-
-                for (Edge edge : node.getIncoming()) {
-
-                    desiredLane = Math.min(
-                            desiredLane,
-                            edge.getSource().getLane());
-                }
-
-                if (desiredLane == Integer.MAX_VALUE) {
-                    continue;
-                }
-
-                if (desiredLane >= node.getLane()) {
-                    continue;
-                }
-
-                Map<Integer, BpmnNode> level =
-                        occupied.get(node.getLevel());
-
-                if (level.containsKey(desiredLane)) {
-                    continue;
-                }
-
-                level.remove(node.getLane());
-
-                node.setLane(desiredLane);
-
-                level.put(desiredLane, node);
-
-                changed = true;
             }
 
         } while (changed);
+
+    }
+
+    /**
+     * Align only simple linear paths.
+     *
+     * A -> B -> C
+     *
+     * but never gateways or merges.
+     */
+    private boolean canAlign(BpmnNode node) {
+
+        if (node.getIncoming().size() != 1) {
+            return false;
+        }
+
+        if (node.getOutgoing().size() != 1) {
+            return false;
+        }
+
+        BpmnNode parent =
+                node.getIncoming()
+                        .get(0)
+                        .getSource();
+
+        if (parent.getOutgoing().size() > 1) {
+            return false;
+        }
+
+        BpmnNode child =
+                node.getOutgoing()
+                        .get(0)
+                        .getTarget();
+
+        if (child.getIncoming().size() > 1) {
+            return false;
+        }
+
+        return true;
 
     }
 
