@@ -1,5 +1,9 @@
 package com.tnq.bpmnlayout.layout;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.tnq.bpmnlayout.analysis.Backbone;
 import com.tnq.bpmnlayout.analysis.GraphStatistics;
 import com.tnq.bpmnlayout.graph.BpmnGraph;
 
@@ -17,6 +21,13 @@ public class LayoutContext {
     private GraphStatistics statistics;
 
     private GridLayoutEngine grid;
+
+    /*
+     * Main process backbone
+     */
+    private Backbone backbone;
+    private final List<Branch> branches =
+        new ArrayList<>();
 
     public LayoutContext() {
     }
@@ -43,6 +54,18 @@ public class LayoutContext {
 
     public void setGrid(GridLayoutEngine grid) {
         this.grid = grid;
+    }
+
+    public Backbone getBackbone() {
+        return backbone;
+    }
+
+    public void setBackbone(Backbone backbone) {
+        this.backbone = backbone;
+    }
+
+    public List<Branch> getBranches() {
+        return branches;
     }
 
 }

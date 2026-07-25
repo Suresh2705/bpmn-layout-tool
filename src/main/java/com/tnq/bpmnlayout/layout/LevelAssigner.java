@@ -1,64 +1,26 @@
 package com.tnq.bpmnlayout.layout;
 
+import com.tnq.bpmnlayout.analysis.Backbone;
 import com.tnq.bpmnlayout.graph.BpmnGraph;
 import com.tnq.bpmnlayout.graph.BpmnNode;
-import com.tnq.bpmnlayout.graph.Edge;
-
-import java.util.*;
 
 public class LevelAssigner {
 
-    public void assignLevels(BpmnGraph graph) {
+    public void assignLevels(LayoutContext context) {
+
+        BpmnGraph graph = context.getGraph();
+        Backbone backbone = context.getBackbone();
 
         reset(graph);
 
-        BpmnNode start = findStart(graph);
+        int level = 0;
 
-        if (start == null) {
-            throw new IllegalStateException("StartEvent not found");
+        for (BpmnNode node : backbone.getNodes()) {
+
+            node.setLevel(level++);
+
         }
 
-        bfs(start);
-    }
-
-    private void bfs(BpmnNode start) {
-
-        Queue<BpmnNode> queue = new LinkedList<>();
-
-        start.setLevel(0);
-
-        queue.add(start);
-
-        while (!queue.isEmpty()) {
-
-            BpmnNode current = queue.poll();
-
-            int nextLevel = current.getLevel() + 1;
-
-            for (Edge edge : current.getOutgoing()) {
-
-                BpmnNode target = edge.getTarget();
-
-                if (target.getLevel() == -1) {
-
-                    target.setLevel(nextLevel);
-                
-                    queue.add(target);
-                }
-            }
-        }
-    }
-
-    private BpmnNode findStart(BpmnGraph graph) {
-
-        for (BpmnNode node : graph.getNodes()) {
-
-            if (node.getIncoming().isEmpty()) {
-                return node;
-            }
-        }
-
-        return null;
     }
 
     private void reset(BpmnGraph graph) {
@@ -66,6 +28,7 @@ public class LevelAssigner {
         for (BpmnNode node : graph.getNodes()) {
 
             node.setLevel(-1);
+
         }
 
     }

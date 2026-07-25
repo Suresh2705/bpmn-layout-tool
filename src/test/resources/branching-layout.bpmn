@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             id="definitions" targetNamespace="urn:layout-test">
+  <process id="process" isExecutable="true">
+    <startEvent id="start"/>
+    <exclusiveGateway id="split"/>
+    <userTask id="main" name="Main"/>
+    <userTask id="shortBranch" name="Short branch"/>
+    <userTask id="longOne" name="Long branch"/>
+    <userTask id="longTwo" name="Long branch continuation"/>
+    <parallelGateway id="join"/>
+    <endEvent id="end"/>
+    <callActivity id="calledProcess" calledElement="other-process"/>
+    <sequenceFlow id="f1" sourceRef="start" targetRef="split"/>
+    <sequenceFlow id="f2" sourceRef="split" targetRef="main"/>
+    <sequenceFlow id="f3" sourceRef="split" targetRef="shortBranch"/>
+    <sequenceFlow id="f4" sourceRef="split" targetRef="longOne"/>
+    <sequenceFlow id="f5" sourceRef="main" targetRef="join"/>
+    <sequenceFlow id="f6" sourceRef="shortBranch" targetRef="join"/>
+    <sequenceFlow id="f7" sourceRef="longOne" targetRef="longTwo"/>
+    <sequenceFlow id="f8" sourceRef="longTwo" targetRef="join"/>
+    <sequenceFlow id="f9" sourceRef="join" targetRef="end"/>
+    <sequenceFlow id="loop" sourceRef="longTwo" targetRef="split"/>
+  </process>
+</definitions>

@@ -144,8 +144,10 @@ public class BpmnNode {
             case EVENT_GATEWAY:
                 return 50;
 
+            case CALL_ACTIVITY:
+                return 140;
             default:
-                return 100;
+                return 120;
         }
     }
 
@@ -163,8 +165,10 @@ public class BpmnNode {
             case EVENT_GATEWAY:
                 return 50;
 
+            case CALL_ACTIVITY:
+                return 48;
             default:
-                return 80;
+                return 48;
         }
     }
 

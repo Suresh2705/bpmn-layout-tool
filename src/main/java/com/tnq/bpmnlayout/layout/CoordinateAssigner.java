@@ -15,10 +15,12 @@ public class CoordinateAssigner {
                     node.getLevel() *
                     Constants.HORIZONTAL_SPACING;
 
-            int y =
-                    Constants.TOP_MARGIN +
-                    node.getLane() *
-                    Constants.VERTICAL_SPACING;
+            // Align centres, not top edges.  Events, gateways and tasks have
+            // different heights; centre alignment keeps the backbone truly
+            // horizontal and avoids pointless bends on its sequence flows.
+            int y = Constants.TOP_MARGIN
+                    + node.getLane() * Constants.VERTICAL_SPACING
+                    + (Constants.CALL_ACTIVITY_HEIGHT - node.getHeight()) / 2;
 
             LayoutNode layoutNode = node.getLayout();
 

@@ -17,11 +17,15 @@ public class BpmnParser {
 
     public BpmnGraph parse(File file) throws Exception {
 
-        Document doc =
-                DocumentBuilderFactory
-                        .newInstance()
-                        .newDocumentBuilder()
-                        .parse(file);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        // BPMN is input data; do not permit external entity expansion while parsing it.
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+        Document doc = factory.newDocumentBuilder().parse(file);
 
         doc.getDocumentElement().normalize();
 
@@ -77,7 +81,7 @@ public class BpmnParser {
             if (tag == null)
                 tag = e.getTagName();
 
-            if (!tag.endsWith("sequenceFlow"))
+            if (!"sequenceFlow".equals(tag))
                 continue;
 
             String edgeId = e.getAttribute("id");
@@ -86,6 +90,16 @@ public class BpmnParser {
 
             BpmnNode source = graph.getNode(sourceId);
             BpmnNode target = graph.getNode(targetId);
+
+            // Some jBPM models contain less common BPMN flow-node types.  A
+            // sequence flow to one of them must still be represented in the
+            // layout graph even when it has no specialised NodeType yet.
+            if (source == null) {
+                source = addReferencedNode(doc, graph, sourceId);
+            }
+            if (target == null) {
+                target = addReferencedNode(doc, graph, targetId);
+            }
 
             if (source == null || target == null) {
 
@@ -103,6 +117,34 @@ public class BpmnParser {
         }
     }
 
+    private BpmnNode addReferencedNode(
+            Document doc,
+            BpmnGraph graph,
+            String id) {
+
+        NodeList elements = doc.getElementsByTagName("*");
+        for (int i = 0; i < elements.getLength(); i++) {
+            Element candidate = (Element) elements.item(i);
+            if (!id.equals(candidate.getAttribute("id"))) {
+                continue;
+            }
+            String tag = candidate.getLocalName();
+            if (tag == null) {
+                tag = candidate.getTagName();
+            }
+            if ("sequenceFlow".equals(tag)) {
+                return null;
+            }
+            BpmnNode node = new BpmnNode(
+                    id,
+                    candidate.getAttribute("name"),
+                    map(tag));
+            graph.addNode(node);
+            return node;
+        }
+        return null;
+    }
+
     private NodeType map(String tag) {
 
         switch (tag) {
@@ -114,6 +156,9 @@ public class BpmnParser {
                 return NodeType.END_EVENT;
 
             case "userTask":
+                return NodeType.USER_TASK;
+
+            case "task":
                 return NodeType.USER_TASK;
 
             case "scriptTask":
@@ -156,6 +201,7 @@ public class BpmnParser {
                 return NodeType.INTERMEDIATE_THROW_EVENT;
 
             case "intermediateCatchEvent":
+            case "boundaryEvent":
                 return NodeType.INTERMEDIATE_CATCH_EVENT;
 
             default:

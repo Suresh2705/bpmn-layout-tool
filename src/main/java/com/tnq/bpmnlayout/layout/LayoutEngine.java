@@ -1,5 +1,7 @@
 package com.tnq.bpmnlayout.layout;
 
+import com.tnq.bpmnlayout.analysis.Backbone;
+import com.tnq.bpmnlayout.analysis.BackboneFinder;
 import com.tnq.bpmnlayout.analysis.GraphAnalyzer;
 import com.tnq.bpmnlayout.analysis.GraphStatistics;
 import com.tnq.bpmnlayout.graph.BpmnGraph;
@@ -10,71 +12,86 @@ import com.tnq.bpmnlayout.routing.OrthogonalRouter;
 
 public class LayoutEngine {
 
-    private final GraphAnalyzer analyzer = new GraphAnalyzer();
+        private final GraphAnalyzer analyzer = new GraphAnalyzer();
 
-    private final LevelAssigner levelAssigner = new LevelAssigner();
+        private final BackboneFinder backboneFinder = new BackboneFinder();
 
-    private final LaneAssigner laneAssigner = new LaneAssigner();
+        private final LevelAssigner levelAssigner = new LevelAssigner();
 
-    private final BranchBalancer branchBalancer =
-        new BranchBalancer();
+        private final LaneAssigner laneAssigner = new LaneAssigner();
 
-    private final LaneOptimizer laneOptimizer =
-        new LaneOptimizer();
+        private final BranchBalancer branchBalancer = new BranchBalancer();
 
-    private final CoordinateAssigner coordinateAssigner =
-            new CoordinateAssigner();
+        private final LaneOptimizer laneOptimizer = new LaneOptimizer();
 
-    private final JoinDetector joinDetector =
-            new JoinDetector();
+        private final CoordinateAssigner coordinateAssigner = new CoordinateAssigner();
 
-    private final LoopRouter loopRouter =
-            new LoopRouter();
+        private final JoinDetector joinDetector = new JoinDetector();
 
-    private final CrossingReducer crossingReducer =
-            new CrossingReducer();
+        private final LoopRouter loopRouter = new LoopRouter();
 
-    private final OrthogonalRouter orthogonalRouter =
-            new OrthogonalRouter();
+        private final CrossingReducer crossingReducer = new CrossingReducer();
 
-    public LayoutContext layout(BpmnGraph graph) {
+        private final OrthogonalRouter orthogonalRouter = new OrthogonalRouter();
 
-        System.out.println("1. Graph analysis");
-        GraphStatistics stats = analyzer.analyze(graph);
+        private final BranchExpander branchExpander = new BranchExpander();
 
-        System.out.println("2. Level assign");
-        levelAssigner.assignLevels(graph);
+        public LayoutContext layout(BpmnGraph graph) {
 
-        System.out.println("3. Lane assign");
-        laneAssigner.assignLanes(graph);
+                LayoutContext context = new LayoutContext();
 
-        System.out.println("4. Branch balance");
-        branchBalancer.balance(graph);
+                context.setGraph(graph);
 
-        System.out.println("5. Lane optimize");
-        laneOptimizer.optimize(graph);
+                System.out.println("1. Graph analysis");
 
-        System.out.println("6. Grid");
-        GridLayoutEngine grid = new GridLayoutEngine();
-        grid.build(graph);
+                GraphStatistics stats = analyzer.analyze(graph);
 
-        LayoutContext context = new LayoutContext();
-        context.setGraph(graph);
-        context.setStatistics(stats);
-        context.setGrid(grid);
+                context.setStatistics(stats);
 
-        // coordinateAssigner.assign(context);
-        System.out.println("7. Coordinate");
-        coordinateAssigner.assign(graph);
+                System.out.println("2. Finding backbone");
 
-        System.out.println("8. Routing");
-        orthogonalRouter.route(context);
+                Backbone backbone = backboneFinder.find(graph);
 
-        System.out.println("9. Crossing");
-        crossingReducer.reduce(context);
+                context.setBackbone(backbone);
 
-        System.out.println("DONE");
-        return context;
+                System.out.println("3. Level assign");
 
-    }
+                // levelAssigner.assignLevels(graph);
+                levelAssigner.assignLevels(context);
+
+                branchExpander.expand(context);
+
+                System.out.println("4. Lane assign");
+
+                // laneAssigner.assignLanes(graph);
+                laneAssigner.assignLanes(context);
+
+                // LaneAssigner assigns complete branch paths.  The old immediate-child
+                // balancing and linear-path optimiser could split a branch across rows.
+
+                System.out.println("7. Grid");
+
+                GridLayoutEngine grid = new GridLayoutEngine();
+
+                grid.build(graph);
+
+                context.setGrid(grid);
+
+                System.out.println("8. Coordinate");
+
+                coordinateAssigner.assign(graph);
+
+                System.out.println("9. Routing");
+
+                orthogonalRouter.route(context);
+
+                System.out.println("10. Crossing");
+
+                crossingReducer.reduce(context);
+
+                System.out.println("DONE");
+
+                return context;
+        }
+
 }
